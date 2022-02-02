@@ -1,22 +1,37 @@
-FROM python:3.9 as requirements-stage
+# FROM python:3.9 as requirements-stage
 
-WORKDIR /tmp
+# WORKDIR /tmp
 
-RUN pip install poetry
-RUN poetry config virtualenvs.create false
-#RUN POETRY_VIRTUALENVS_CREATE=false poetry install
+# RUN pip install poetry
+# RUN poetry config virtualenvs.create false
+# #RUN POETRY_VIRTUALENVS_CREATE=false poetry install
 
-COPY ./pyproject.toml ./poetry.lock* /tmp/
+# COPY ./pyproject.toml ./poetry.lock* /tmp/
 
-RUN poetry export -f requirements.txt --output requirements.txt --without-hashes
+# RUN poetry export -f requirements.txt --output requirements.txt --without-hashes
 
 FROM python:3.9
 
+ARG MY_ENV
+
+ENV MY_ENV=${MY_ENV} \
+  PYTHONFAULTHANDLER=1 \
+  PYTHONUNBUFFERED=1 \
+  PYTHONHASHSEED=random \
+  PIP_NO_CACHE_DIR=off \
+  PIP_DISABLE_PIP_VERSION_CHECK=on \
+  PIP_DEFAULT_TIMEOUT=100 \
+  POETRY_VERSION=1.0.0
+
+RUN pip install "poetry=${POETRY_VERSION}"
+
 WORKDIR /code
 
-COPY --from=requirements-stage /tmp/requirements.txt /code/requirements.txt
+COPY poetry.lock pyproject.toml /code/
 
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+# COPY --from=requirements-stage /tmp/requirements.txt /code/requirements.txt
+
+# RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 COPY ./app /code/app
 
