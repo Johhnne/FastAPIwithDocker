@@ -23,8 +23,7 @@ ENV MY_ENV=${MY_ENV} \
   PIP_DEFAULT_TIMEOUT=100 \
   POETRY_VERSION=1.0.0
 
-RUN pip install "poetry=${POETRY_VERSION}"
-
+RUN pip install "poetry==${POETRY_VERSION}"
 WORKDIR /code
 
 COPY poetry.lock pyproject.toml /code/
@@ -32,6 +31,10 @@ COPY poetry.lock pyproject.toml /code/
 # COPY --from=requirements-stage /tmp/requirements.txt /code/requirements.txt
 
 # RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+
+RUN poetry config virtualenvs.create false \
+  && poetry install $(test "$YOUR_ENV" == production && echo "--no-dev") --no-interaction --no-ansi
+
 
 COPY ./app /code/app
 
