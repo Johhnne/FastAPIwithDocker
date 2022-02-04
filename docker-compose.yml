@@ -1,0 +1,22 @@
+version: '3'
+services:
+  db:
+    image: postgres:11.5
+    container_name: pg-dev
+    volumes:
+      -  ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: docker
+    ports:
+      - "5439:5439"
+    command:
+      - "-p 5439"
+  app:
+    container_name: fast_api_dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
