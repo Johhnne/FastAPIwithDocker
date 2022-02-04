@@ -7,11 +7,19 @@
 
 # How it works
 
-It is a simple cointainer build through a **Dockerfile**, where you first need to build a image, and then run the container. 
+It is a simple cointainer build through a **Dockerfile**, and initializaed using docker-compose, wich loads the PostgresSQL database and the application within a container, with the following command:
 ```
-docker build -t <your_image> .
+docker-compose up # include <service-name> at the end to initialize only one service
+```
 
-docker run -d --name <your_container> -p 80:80 <your_image>
+
+The database can be accessed when the container is running:
+```
+docker exec -it pg-dev psql "host=localhost port=5439 user=docker dbname=docker"
+```
+And to enter in the container's bash:
+```
+docker exec -it <nome_container> /bin/bash # entra no bash do container
 ```
 
 Then the output app can be found on localhost:80
